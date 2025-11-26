@@ -264,32 +264,14 @@ export default function Matches() {
 
   const rejectMatch = async (matchId: string) => {
     try {
-      // Buscar o match para pegar o found_item_id
-      const { data: match, error: matchFetchError } = await supabase
-        .from("matches")
-        .select("found_item_id")
-        .eq("id", matchId)
-        .single();
-
-      if (matchFetchError) throw matchFetchError;
-
       // Atualizar status do match para rejected
+      // O trigger no banco de dados automaticamente exclui o item encontrado
       const { error: matchError } = await supabase
         .from("matches")
         .update({ status: "rejected" })
         .eq("id", matchId);
 
       if (matchError) throw matchError;
-
-      // Excluir o item encontrado
-      if (match?.found_item_id) {
-        const { error: deleteError } = await supabase
-          .from("items")
-          .delete()
-          .eq("id", match.found_item_id);
-
-        if (deleteError) throw deleteError;
-      }
 
       toast.success("Correspondência rejeitada e item encontrado excluído.");
       fetchMatches();
