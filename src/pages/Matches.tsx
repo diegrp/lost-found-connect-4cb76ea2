@@ -262,39 +262,31 @@ export default function Matches() {
     }
   };
 
-  const rejectMatch = async (matchId: string) => {
+  const rejectMatch = async (matchId: string, foundItemId: string) => {
     try {
-      // Atualizar status do match para rejected
+      // Excluir o item encontrado
+      const { error: itemError } = await supabase
+        .from("items")
+        .delete()
+        .eq("id", foundItemId);
+
+      if (itemError) throw itemError;
+
+      // Excluir o match
       const { error: matchError } = await supabase
         .from("matches")
-        .update({ status: "rejected" })
+        .delete()
         .eq("id", matchId);
 
       if (matchError) throw matchError;
 
-      toast.success("Correspondência marcada como não correspondente. Você pode reverter esta ação.");
+      toast.success("Correspondência rejeitada e item encontrado excluído.");
       fetchMatches();
     } catch (error: any) {
       toast.error("Erro ao rejeitar correspondência: " + error.message);
     }
   };
 
-  const unrejectMatch = async (matchId: string) => {
-    try {
-      // Atualizar status do match de volta para pending
-      const { error: matchError } = await supabase
-        .from("matches")
-        .update({ status: "pending" })
-        .eq("id", matchId);
-
-      if (matchError) throw matchError;
-
-      toast.success("Rejeição revertida. A correspondência voltou ao status pendente.");
-      fetchMatches();
-    } catch (error: any) {
-      toast.error("Erro ao reverter rejeição: " + error.message);
-    }
-  };
 
   const getMatchScoreColor = (score: number) => {
     if (score >= 80) return "bg-green-500";
@@ -307,8 +299,7 @@ export default function Matches() {
       pending: { label: "Pendente", variant: "outline" },
       accepted: { label: "Aceito", variant: "default" },
       claimed: { label: "Reclamado", variant: "secondary" },
-      returned: { label: "Devolvido", variant: "default" },
-      rejected: { label: "Rejeitado", variant: "destructive" }
+      returned: { label: "Devolvido", variant: "default" }
     };
     
     const config = statusMap[status] || statusMap.pending;
@@ -356,9 +347,7 @@ export default function Matches() {
             matches.map((match) => (
               <Card 
                 key={match.id} 
-                className={`overflow-hidden transition-opacity ${
-                  match.status === "rejected" ? "opacity-50" : "opacity-100"
-                }`}
+                className="overflow-hidden"
               >
                 <CardHeader className="bg-muted/50">
                   <div className="flex justify-between items-center">
@@ -476,7 +465,7 @@ export default function Matches() {
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={() => rejectMatch(match.id)}
+                          onClick={() => rejectMatch(match.id, match.found_item_id)}
                           className="flex items-center gap-2"
                         >
                           <X className="h-4 w-4" />
@@ -495,7 +484,7 @@ export default function Matches() {
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={() => rejectMatch(match.id)}
+                          onClick={() => rejectMatch(match.id, match.found_item_id)}
                           className="flex items-center gap-2"
                         >
                           <X className="h-4 w-4" />
@@ -514,7 +503,7 @@ export default function Matches() {
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={() => rejectMatch(match.id)}
+                          onClick={() => rejectMatch(match.id, match.found_item_id)}
                           className="flex items-center gap-2"
                         >
                           <X className="h-4 w-4" />
@@ -526,21 +515,6 @@ export default function Matches() {
                       <Badge variant="default" className="px-4 py-2">
                         Processo Concluído ✓
                       </Badge>
-                    )}
-                    {match.status === "rejected" && (
-                      <>
-                        <Badge variant="destructive" className="px-4 py-2">
-                          Correspondência Rejeitada
-                        </Badge>
-                        <Button
-                          variant="outline"
-                          onClick={() => unrejectMatch(match.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                          É este item sim
-                        </Button>
-                      </>
                     )}
                     {(match.status === "accepted" || match.status === "claimed") && (
                       <div className="w-full mt-2">
