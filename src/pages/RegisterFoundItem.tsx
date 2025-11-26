@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,13 @@ import { TablesInsert } from "@/integrations/supabase/types";
 
 const RegisterFoundItem = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  
+  // Check if there's prefilled data from navigation state
+  const prefilledItem = location.state?.prefilledItem;
+  const isPrefilledMode = !!prefilledItem;
   
   const [formData, setFormData] = useState({
     title: "",
@@ -26,6 +31,21 @@ const RegisterFoundItem = () => {
     image_url: "",
     quantity: "1",
   });
+
+  useEffect(() => {
+    if (prefilledItem) {
+      setFormData({
+        title: prefilledItem.title || "",
+        description: prefilledItem.description || "",
+        category: prefilledItem.category || "",
+        date_lost_or_found: "",
+        location: "",
+        contact_info: "",
+        image_url: prefilledItem.image_url || "",
+        quantity: String(prefilledItem.quantity || 1),
+      });
+    }
+  }, [prefilledItem]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,16 +166,20 @@ const RegisterFoundItem = () => {
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Ex: Carteira marrom"
                   required
+                  disabled={isPrefilledMode}
+                  className={isPrefilledMode ? "opacity-60 cursor-not-allowed" : ""}
                 />
               </div>
 
               <div>
-                <Label htmlFor="description">Descrição *</Label>
+                <Label htmlFor="description">
+                  {isPrefilledMode ? "Estado Atual Encontrado *" : "Descrição *"}
+                </Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Descreva o item em detalhes..."
+                  placeholder={isPrefilledMode ? "Descreva o estado atual do item que você encontrou..." : "Descreva o item em detalhes..."}
                   required
                 />
               </div>
@@ -179,8 +203,9 @@ const RegisterFoundItem = () => {
                   value={formData.category}
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
                   required
+                  disabled={isPrefilledMode}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={isPrefilledMode ? "opacity-60 cursor-not-allowed" : ""}>
                     <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent>
