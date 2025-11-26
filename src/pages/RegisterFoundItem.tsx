@@ -27,7 +27,7 @@ const RegisterFoundItem = () => {
     category: "",
     date_lost_or_found: "",
     location: "",
-    contact_info: "",
+    contact_info: user?.email || "",
     image_url: "",
     quantity: "1",
   });
@@ -40,12 +40,12 @@ const RegisterFoundItem = () => {
         category: prefilledItem.category || "",
         date_lost_or_found: "",
         location: "",
-        contact_info: "",
+        contact_info: user?.email || "",
         image_url: prefilledItem.image_url || "",
         quantity: String(prefilledItem.quantity || 1),
       });
     }
-  }, [prefilledItem]);
+  }, [prefilledItem, user?.email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,7 +185,7 @@ const RegisterFoundItem = () => {
               </div>
 
               <div>
-                <Label htmlFor="quantity">Quantidade *</Label>
+                <Label htmlFor="quantity">Quantidade de itens encontrados *</Label>
                 <Input
                   id="quantity"
                   type="number"
@@ -251,17 +251,21 @@ const RegisterFoundItem = () => {
                   value={formData.contact_info}
                   onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
                   placeholder="Seu email ou telefone"
+                  disabled
+                  className="opacity-60 cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <Label htmlFor="image">URL da Imagem</Label>
+                <Label htmlFor="image">
+                  {isPrefilledMode ? "Link da imagem do estado atual do item encontrado" : "URL da Imagem"}
+                </Label>
                 <Input
                   id="image"
                   type="url"
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://exemplo.com/imagem.jpg"
+                  placeholder={isPrefilledMode ? "Adicione o link da foto do estado atual do item" : "https://exemplo.com/imagem.jpg"}
                 />
               </div>
 
