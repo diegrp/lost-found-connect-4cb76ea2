@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Calendar, MapPin, User, Trash2, Edit } from "lucide-react";
 import { toast } from "sonner";
+import { getCategoryLabel } from "@/lib/translations";
 
 interface Item {
   id: string;
@@ -119,33 +120,6 @@ export default function MyItems() {
         return "Devolvido";
       default:
         return status;
-    }
-  };
-
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case "electronics":
-        return "Eletrônicos";
-      case "documents":
-        return "Documentos";
-      case "clothing":
-        return "Roupas";
-      case "accessories":
-        return "Acessórios";
-      case "bags":
-        return "Bolsas/Mochilas";
-      case "keys":
-        return "Chaves";
-      case "jewelry":
-        return "Joias";
-      case "sports":
-        return "Artigos Esportivos";
-      case "books":
-        return "Livros";
-      case "other":
-        return "Outros";
-      default:
-        return category;
     }
   };
 
