@@ -154,7 +154,7 @@ const Dashboard = () => {
             <CardContent>
               <Button 
                 className="w-full" 
-                onClick={() => navigate('/register-lost')}
+                onClick={() => navigate('/register-lost-item')}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Registrar Item Perdido
