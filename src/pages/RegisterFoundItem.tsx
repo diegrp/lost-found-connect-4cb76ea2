@@ -43,6 +43,27 @@ const RegisterFoundItem = () => {
     setLoading(true);
 
     try {
+      // Verificar se o usuário já tem um item perdido com a mesma categoria
+      const { data: existingLostItems, error: checkError } = await supabase
+        .from("items")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("is_lost", true)
+        .eq("category", formData.category as TablesInsert<"items">["category"])
+        .in("status", ["lost", "matched"]);
+
+      if (checkError) throw checkError;
+
+      if (existingLostItems && existingLostItems.length > 0) {
+        toast.error(
+          "Você já tem um item perdido cadastrado nesta categoria. " +
+          "Por favor, atualize o status do item perdido para 'Encontrado' ou exclua-o antes de registrar um novo item encontrado.",
+          { duration: 6000 }
+        );
+        setLoading(false);
+        return;
+      }
+
       const itemData: TablesInsert<"items"> = {
         title: formData.title,
         description: formData.description,
