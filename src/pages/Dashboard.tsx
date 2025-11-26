@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Search, CheckCircle, AlertCircle, LogOut, Plus } from 'lucide-react';
+import { Package, Search, CheckCircle, AlertCircle, LogOut, Plus, Link as LinkIcon } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -214,6 +214,25 @@ const Dashboard = () => {
               >
                 <Package className="w-4 h-4 mr-2" />
                 Meus Registros
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="transition-all hover:shadow-lg">
+            <CardHeader>
+              <CardTitle>Correspondências</CardTitle>
+              <CardDescription>
+                Veja possíveis matches e gerencie o processo de devolução
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                className="w-full" 
+                variant="outline"
+                onClick={() => navigate('/matches')}
+              >
+                <LinkIcon className="w-4 h-4 mr-2" />
+                Ver Correspondências
               </Button>
             </CardContent>
           </Card>
