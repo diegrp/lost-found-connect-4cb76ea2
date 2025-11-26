@@ -25,6 +25,7 @@ export type Database = {
           image_url: string | null
           is_lost: boolean
           location: string | null
+          quantity: number
           status: Database["public"]["Enums"]["item_status"]
           title: string
           updated_at: string | null
@@ -40,6 +41,7 @@ export type Database = {
           image_url?: string | null
           is_lost: boolean
           location?: string | null
+          quantity?: number
           status: Database["public"]["Enums"]["item_status"]
           title: string
           updated_at?: string | null
@@ -55,6 +57,7 @@ export type Database = {
           image_url?: string | null
           is_lost?: boolean
           location?: string | null
+          quantity?: number
           status?: Database["public"]["Enums"]["item_status"]
           title?: string
           updated_at?: string | null

@@ -24,6 +24,7 @@ const RegisterLostItem = () => {
     location: "",
     contact_info: "",
     image_url: "",
+    quantity: "1",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,26 +44,54 @@ const RegisterLostItem = () => {
     setLoading(true);
 
     try {
-      // Verificar se já existe um item com o mesmo título e imagem
-      let query = supabase
+      // Verificar se já existe um item encontrado com o mesmo título e imagem
+      let foundQuery = supabase
         .from("items")
         .select("*")
         .eq("user_id", user.id)
+        .eq("is_lost", false)
         .eq("title", formData.title.trim())
-        .in("status", ["lost", "found", "matched"]);
+        .in("status", ["found", "matched"]);
 
-      // Se houver imagem, incluir na verificação
       if (formData.image_url) {
-        query = query.eq("image_url", formData.image_url.trim());
+        foundQuery = foundQuery.eq("image_url", formData.image_url.trim());
       }
 
-      const { data: existingItems, error: checkError } = await query;
+      const { data: existingFoundItems, error: foundCheckError } = await foundQuery;
 
-      if (checkError) throw checkError;
+      if (foundCheckError) throw foundCheckError;
 
-      if (existingItems && existingItems.length > 0) {
+      if (existingFoundItems && existingFoundItems.length > 0) {
         toast.error(
-          "Você já tem um item cadastrado com o mesmo título" + 
+          "Você não pode registrar um item perdido já registrado em itens encontrados" +
+          (formData.image_url ? " (mesmo título e imagem)" : " (mesmo título)") + 
+          ". Atualize o status do item encontrado para 'Perdido'.",
+          { duration: 6000 }
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Verificar se já existe um item perdido com o mesmo título e imagem
+      let lostQuery = supabase
+        .from("items")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("is_lost", true)
+        .eq("title", formData.title.trim())
+        .in("status", ["lost", "matched"]);
+
+      if (formData.image_url) {
+        lostQuery = lostQuery.eq("image_url", formData.image_url.trim());
+      }
+
+      const { data: existingLostItems, error: lostCheckError } = await lostQuery;
+
+      if (lostCheckError) throw lostCheckError;
+
+      if (existingLostItems && existingLostItems.length > 0) {
+        toast.error(
+          "Você já tem um item perdido cadastrado com o mesmo título" + 
           (formData.image_url ? " e imagem" : "") + 
           ". Por favor, atualize o item existente ou use um título diferente.",
           { duration: 6000 }
@@ -79,6 +108,7 @@ const RegisterLostItem = () => {
         location: formData.location || null,
         contact_info: formData.contact_info || null,
         image_url: formData.image_url || null,
+        quantity: parseInt(formData.quantity) || 1,
         user_id: user.id,
         is_lost: true,
         status: "lost",
@@ -198,6 +228,19 @@ const RegisterLostItem = () => {
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                   placeholder="https://exemplo.com/imagem.jpg"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="quantity">Quantidade *</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min="1"
+                  value={formData.quantity}
+                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                  placeholder="1"
+                  required
                 />
               </div>
 
