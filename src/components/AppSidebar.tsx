@@ -1,8 +1,6 @@
 import { Home, Search, Package, Plus, FileCheck, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import {
@@ -31,14 +29,12 @@ const registerItems = [
 
 export function AppSidebar() {
   const { state } = useSidebar();
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await signOut();
       toast.success("Logout realizado com sucesso");
-      navigate("/");
     } catch (error) {
       toast.error("Erro ao fazer logout");
     }
