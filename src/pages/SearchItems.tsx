@@ -178,7 +178,7 @@ export default function SearchItems() {
       }
     } else {
       // Navigate to register found item page with pre-filled data
-      navigate("/register-found-item", {
+      navigate("/register-found", {
         state: {
           prefilledItem: {
             title: item.title,
