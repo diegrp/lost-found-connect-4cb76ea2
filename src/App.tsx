@@ -9,6 +9,8 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import RegisterLostItem from "./pages/RegisterLostItem";
 import RegisterFoundItem from "./pages/RegisterFoundItem";
+import SearchItems from "./pages/SearchItems";
+import MyItems from "./pages/MyItems";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/register-lost-item" element={<RegisterLostItem />} />
             <Route path="/register-found-item" element={<RegisterFoundItem />} />
+            <Route path="/search-items" element={<SearchItems />} />
+            <Route path="/my-items" element={<MyItems />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
