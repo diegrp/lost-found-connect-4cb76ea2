@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -24,19 +26,31 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/register-lost-item" element={<RegisterLostItem />} />
-            <Route path="/register-found-item" element={<RegisterFoundItem />} />
-            <Route path="/search-items" element={<SearchItems />} />
-            <Route path="/my-items" element={<MyItems />} />
-            <Route path="/matches" element={<Matches />} />
-            <Route path="/edit-item/:id" element={<EditItem />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <SidebarProvider>
+            <div className="min-h-screen flex w-full">
+              <AppSidebar />
+              <main className="flex-1 flex flex-col">
+                <header className="h-14 border-b flex items-center px-4">
+                  <SidebarTrigger />
+                </header>
+                <div className="flex-1">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/register-lost" element={<RegisterLostItem />} />
+                    <Route path="/register-found" element={<RegisterFoundItem />} />
+                    <Route path="/search-items" element={<SearchItems />} />
+                    <Route path="/my-items" element={<MyItems />} />
+                    <Route path="/matches" element={<Matches />} />
+                    <Route path="/edit-item/:id" element={<EditItem />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </div>
+              </main>
+            </div>
+          </SidebarProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
