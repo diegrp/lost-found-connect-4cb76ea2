@@ -196,7 +196,7 @@ export default function MyItems() {
                 <CardHeader>
                   <div className="flex justify-between items-start mb-2">
                     <Badge className={getStatusColor(item.status)}>
-                      {item.is_lost ? "Perdido" : "Encontrado"}
+                      {getStatusLabel(item.status)}
                     </Badge>
                     <Badge variant="outline">{getCategoryLabel(item.category)}</Badge>
                   </div>
