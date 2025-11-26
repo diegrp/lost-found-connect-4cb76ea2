@@ -60,27 +60,65 @@ export default function Matches() {
     try {
       setIsLoading(true);
       
-      // Buscar matches onde o usuário é dono do item perdido ou encontrado
-      const { data, error } = await supabase
+      if (!user?.id) {
+        setMatches([]);
+        return;
+      }
+
+      // Buscar todos os itens do usuário (perdidos e encontrados)
+      const { data: userItems, error: itemsError } = await supabase
+        .from("items")
+        .select("id")
+        .eq("user_id", user.id);
+
+      if (itemsError) throw itemsError;
+
+      const userItemIds = userItems?.map(item => item.id) || [];
+
+      if (userItemIds.length === 0) {
+        setMatches([]);
+        return;
+      }
+
+      // Buscar matches onde o usuário é dono do item perdido OU encontrado
+      const { data: matchesData, error: matchesError } = await supabase
         .from("matches")
-        .select(`
-          *,
-          lost_item:items!matches_lost_item_id_fkey(*),
-          found_item:items!matches_found_item_id_fkey(*)
-        `)
+        .select("*")
+        .or(`lost_item_id.in.(${userItemIds.join(",")}),found_item_id.in.(${userItemIds.join(",")})`)
         .order("match_score", { ascending: false });
 
-      if (error) throw error;
+      if (matchesError) throw matchesError;
 
-      // Filtrar apenas matches relevantes ao usuário
-      const userMatches = (data || []).filter(
-        (match: any) =>
-          match.lost_item.user_id === user?.id ||
-          match.found_item.user_id === user?.id
-      );
+      // Buscar detalhes dos itens perdidos e encontrados
+      const lostItemIds = matchesData?.map(m => m.lost_item_id) || [];
+      const foundItemIds = matchesData?.map(m => m.found_item_id) || [];
+      const allItemIds = [...new Set([...lostItemIds, ...foundItemIds])];
 
-      setMatches(userMatches);
+      if (allItemIds.length === 0) {
+        setMatches([]);
+        return;
+      }
+
+      const { data: itemsData, error: itemsDataError } = await supabase
+        .from("items")
+        .select("*")
+        .in("id", allItemIds);
+
+      if (itemsDataError) throw itemsDataError;
+
+      // Mapear itens por ID
+      const itemsMap = new Map(itemsData?.map(item => [item.id, item]));
+
+      // Construir matches completos
+      const completeMatches = matchesData?.map(match => ({
+        ...match,
+        lost_item: itemsMap.get(match.lost_item_id),
+        found_item: itemsMap.get(match.found_item_id)
+      })).filter(m => m.lost_item && m.found_item) || [];
+
+      setMatches(completeMatches as Match[]);
     } catch (error: any) {
+      console.error("Erro ao carregar correspondências:", error);
       toast.error("Erro ao carregar correspondências: " + error.message);
     } finally {
       setIsLoading(false);
@@ -105,6 +143,35 @@ export default function Matches() {
 
   const acceptMatch = async (matchId: string, lostItemId: string, foundItemId: string) => {
     try {
+      // Verificar se o usuário é dono de um dos itens
+      const { data: lostItem } = await supabase
+        .from("items")
+        .select("user_id")
+        .eq("id", lostItemId)
+        .single();
+
+      const { data: foundItem } = await supabase
+        .from("items")
+        .select("user_id")
+        .eq("id", foundItemId)
+        .single();
+
+      if (!lostItem || !foundItem) {
+        throw new Error("Itens não encontrados");
+      }
+
+      if (lostItem.user_id !== user?.id && foundItem.user_id !== user?.id) {
+        throw new Error("Você não tem permissão para aceitar esta correspondência");
+      }
+
+      // Atualizar status do match
+      const { error: matchError } = await supabase
+        .from("matches")
+        .update({ status: "accepted" })
+        .eq("id", matchId);
+
+      if (matchError) throw matchError;
+
       // Atualizar status dos itens para "matched"
       const { error: lostError } = await supabase
         .from("items")
@@ -120,23 +187,24 @@ export default function Matches() {
 
       if (foundError) throw foundError;
 
-      // Atualizar status do match
-      const { error: matchError } = await supabase
-        .from("matches")
-        .update({ status: "accepted" })
-        .eq("id", matchId);
-
-      if (matchError) throw matchError;
-
-      toast.success("Correspondência aceita! Os itens foram marcados como encontrados.");
+      toast.success("Correspondência aceita! Agora vocês podem entrar em contato para organizar a devolução.");
       fetchMatches();
     } catch (error: any) {
+      console.error("Erro ao aceitar correspondência:", error);
       toast.error("Erro ao aceitar correspondência: " + error.message);
     }
   };
 
   const markAsClaimed = async (matchId: string, lostItemId: string, foundItemId: string) => {
     try {
+      // Atualizar status do match
+      const { error: matchError } = await supabase
+        .from("matches")
+        .update({ status: "claimed" })
+        .eq("id", matchId);
+
+      if (matchError) throw matchError;
+
       // Atualizar status dos itens para "claimed"
       const { error: lostError } = await supabase
         .from("items")
@@ -152,23 +220,24 @@ export default function Matches() {
 
       if (foundError) throw foundError;
 
-      // Atualizar status do match
-      const { error: matchError } = await supabase
-        .from("matches")
-        .update({ status: "claimed" })
-        .eq("id", matchId);
-
-      if (matchError) throw matchError;
-
-      toast.success("Item marcado como reclamado pelo dono!");
+      toast.success("Item marcado como reclamado! Aguardando devolução.");
       fetchMatches();
     } catch (error: any) {
+      console.error("Erro ao marcar como reclamado:", error);
       toast.error("Erro ao marcar como reclamado: " + error.message);
     }
   };
 
   const markAsReturned = async (matchId: string, lostItemId: string, foundItemId: string) => {
     try {
+      // Atualizar status do match
+      const { error: matchError } = await supabase
+        .from("matches")
+        .update({ status: "returned" })
+        .eq("id", matchId);
+
+      if (matchError) throw matchError;
+
       // Atualizar status dos itens para "returned"
       const { error: lostError } = await supabase
         .from("items")
@@ -184,17 +253,10 @@ export default function Matches() {
 
       if (foundError) throw foundError;
 
-      // Atualizar status do match
-      const { error: matchError } = await supabase
-        .from("matches")
-        .update({ status: "returned" })
-        .eq("id", matchId);
-
-      if (matchError) throw matchError;
-
-      toast.success("Item marcado como devolvido! Processo concluído.");
+      toast.success("Item marcado como devolvido! Processo concluído com sucesso.");
       fetchMatches();
     } catch (error: any) {
+      console.error("Erro ao marcar como devolvido:", error);
       toast.error("Erro ao marcar como devolvido: " + error.message);
     }
   };
@@ -396,28 +458,41 @@ export default function Matches() {
                         </Button>
                       </>
                     )}
-                    {match.status === "accepted" && (
+                    {match.status === "accepted" && match.lost_item.user_id === user?.id && (
                       <Button
                         onClick={() =>
                           markAsClaimed(match.id, match.lost_item_id, match.found_item_id)
                         }
                       >
-                        Marcar como Reclamado
+                        Confirmar que Recuperei o Item
                       </Button>
                     )}
-                    {match.status === "claimed" && (
+                    {match.status === "claimed" && match.found_item.user_id === user?.id && (
                       <Button
                         onClick={() =>
                           markAsReturned(match.id, match.lost_item_id, match.found_item_id)
                         }
                       >
-                        Marcar como Devolvido
+                        Confirmar Devolução
                       </Button>
                     )}
                     {match.status === "returned" && (
                       <Badge variant="default" className="px-4 py-2">
                         Processo Concluído ✓
                       </Badge>
+                    )}
+                    {match.status === "rejected" && (
+                      <Badge variant="destructive" className="px-4 py-2">
+                        Correspondência Rejeitada
+                      </Badge>
+                    )}
+                    {(match.status === "accepted" || match.status === "claimed") && (
+                      <div className="w-full mt-2">
+                        <p className="text-sm text-muted-foreground">
+                          {match.status === "accepted" && "Entre em contato para organizar a devolução."}
+                          {match.status === "claimed" && "Aguardando confirmação da devolução."}
+                        </p>
+                      </div>
                     )}
                   </div>
                 </CardContent>
