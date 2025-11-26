@@ -81,10 +81,12 @@ export default function Matches() {
       }
 
       // Buscar matches onde o usuário é dono do item perdido OU encontrado
+      // Excluir correspondências rejeitadas
       const { data: matchesData, error: matchesError } = await supabase
         .from("matches")
         .select("*")
         .or(`lost_item_id.in.(${userItemIds.join(",")}),found_item_id.in.(${userItemIds.join(",")})`)
+        .neq("status", "rejected")
         .order("match_score", { ascending: false });
 
       if (matchesError) throw matchesError;
