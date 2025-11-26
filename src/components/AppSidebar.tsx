@@ -38,7 +38,7 @@ export function AppSidebar() {
     try {
       await supabase.auth.signOut();
       toast.success("Logout realizado com sucesso");
-      navigate("/auth");
+      navigate("/");
     } catch (error) {
       toast.error("Erro ao fazer logout");
     }
