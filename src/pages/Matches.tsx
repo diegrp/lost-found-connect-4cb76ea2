@@ -82,12 +82,10 @@ export default function Matches() {
       }
 
       // Buscar matches onde o usuário é dono do item perdido OU encontrado
-      // Excluir correspondências rejeitadas
       const { data: matchesData, error: matchesError } = await supabase
         .from("matches")
         .select("*")
         .or(`lost_item_id.in.(${userItemIds.join(",")}),found_item_id.in.(${userItemIds.join(",")})`)
-        .neq("status", "rejected")
         .order("match_score", { ascending: false });
 
       if (matchesError) throw matchesError;
@@ -266,16 +264,6 @@ export default function Matches() {
 
   const rejectMatch = async (matchId: string) => {
     try {
-      // Buscar o match para pegar os IDs dos itens
-      const { data: match, error: matchFetchError } = await supabase
-        .from("matches")
-        .select("lost_item_id, found_item_id")
-        .eq("id", matchId)
-        .single();
-
-      if (matchFetchError) throw matchFetchError;
-      if (!match) throw new Error("Correspondência não encontrada");
-
       // Atualizar status do match para rejected
       const { error: matchError } = await supabase
         .from("matches")
@@ -284,25 +272,27 @@ export default function Matches() {
 
       if (matchError) throw matchError;
 
-      // Reverter status dos itens para lost/found
-      const { error: lostError } = await supabase
-        .from("items")
-        .update({ status: "lost" })
-        .eq("id", match.lost_item_id);
-
-      if (lostError) throw lostError;
-
-      const { error: foundError } = await supabase
-        .from("items")
-        .update({ status: "found" })
-        .eq("id", match.found_item_id);
-
-      if (foundError) throw foundError;
-
-      toast.success("Correspondência rejeitada e itens revertidos ao status anterior.");
+      toast.success("Correspondência marcada como não correspondente. Você pode reverter esta ação.");
       fetchMatches();
     } catch (error: any) {
       toast.error("Erro ao rejeitar correspondência: " + error.message);
+    }
+  };
+
+  const unrejectMatch = async (matchId: string) => {
+    try {
+      // Atualizar status do match de volta para pending
+      const { error: matchError } = await supabase
+        .from("matches")
+        .update({ status: "pending" })
+        .eq("id", matchId);
+
+      if (matchError) throw matchError;
+
+      toast.success("Rejeição revertida. A correspondência voltou ao status pendente.");
+      fetchMatches();
+    } catch (error: any) {
+      toast.error("Erro ao reverter rejeição: " + error.message);
     }
   };
 
@@ -364,7 +354,12 @@ export default function Matches() {
             </Card>
           ) : (
             matches.map((match) => (
-              <Card key={match.id} className="overflow-hidden">
+              <Card 
+                key={match.id} 
+                className={`overflow-hidden transition-opacity ${
+                  match.status === "rejected" ? "opacity-50" : "opacity-100"
+                }`}
+              >
                 <CardHeader className="bg-muted/50">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
@@ -533,9 +528,19 @@ export default function Matches() {
                       </Badge>
                     )}
                     {match.status === "rejected" && (
-                      <Badge variant="destructive" className="px-4 py-2">
-                        Correspondência Rejeitada
-                      </Badge>
+                      <>
+                        <Badge variant="destructive" className="px-4 py-2">
+                          Correspondência Rejeitada
+                        </Badge>
+                        <Button
+                          variant="outline"
+                          onClick={() => unrejectMatch(match.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <CheckCircle className="h-4 w-4" />
+                          É este item sim
+                        </Button>
+                      </>
                     )}
                     {(match.status === "accepted" || match.status === "claimed") && (
                       <div className="w-full mt-2">
