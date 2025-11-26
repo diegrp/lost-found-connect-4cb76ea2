@@ -264,6 +264,15 @@ export default function Matches() {
 
   const rejectMatch = async (matchId: string) => {
     try {
+      // Buscar o match para pegar o found_item_id
+      const { data: match, error: matchFetchError } = await supabase
+        .from("matches")
+        .select("found_item_id")
+        .eq("id", matchId)
+        .single();
+
+      if (matchFetchError) throw matchFetchError;
+
       // Atualizar status do match para rejected
       const { error: matchError } = await supabase
         .from("matches")
@@ -272,7 +281,17 @@ export default function Matches() {
 
       if (matchError) throw matchError;
 
-      toast.success("Correspondência marcada como não correspondente. Você pode reverter esta ação.");
+      // Excluir o item encontrado
+      if (match?.found_item_id) {
+        const { error: deleteError } = await supabase
+          .from("items")
+          .delete()
+          .eq("id", match.found_item_id);
+
+        if (deleteError) throw deleteError;
+      }
+
+      toast.success("Correspondência rejeitada e item encontrado excluído.");
       fetchMatches();
     } catch (error: any) {
       toast.error("Erro ao rejeitar correspondência: " + error.message);
