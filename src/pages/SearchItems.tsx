@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Search, Calendar, MapPin, User } from "lucide-react";
+import { Search, Calendar, MapPin, User, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { getCategoryLabel } from "@/lib/translations";
 
@@ -135,6 +135,52 @@ export default function SearchItems() {
     }
   };
 
+  const handleFoundItem = async (item: Item) => {
+    // Check if the current user is the owner of the item
+    if (item.user_id === user?.id) {
+      // Update the status to "found"
+      try {
+        const { error } = await supabase
+          .from("items")
+          .update({ status: "found", is_lost: false })
+          .eq("id", item.id);
+
+        if (error) throw error;
+
+        // Refresh items
+        fetchItems();
+
+        // Show toast with undo action
+        toast.success("Status atualizado para Encontrado", {
+          action: {
+            label: "Desfazer",
+            onClick: async () => {
+              const { error: undoError } = await supabase
+                .from("items")
+                .update({ status: "lost", is_lost: true })
+                .eq("id", item.id);
+
+              if (!undoError) {
+                fetchItems();
+                toast.info("Status revertido para Perdido");
+              }
+            },
+          },
+          style: {
+            background: "hsl(var(--primary))",
+            color: "hsl(var(--primary-foreground))",
+            border: "none",
+          },
+        });
+      } catch (error: any) {
+        toast.error("Erro ao atualizar status: " + error.message);
+      }
+    } else {
+      // Navigate to register found item page
+      navigate("/register-found-item");
+    }
+  };
+
   if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -227,7 +273,7 @@ export default function SearchItems() {
                   <CardDescription className="line-clamp-2">{item.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm text-muted-foreground">
+                  <div className="space-y-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
                       <span>{item.location}</span>
@@ -243,6 +289,16 @@ export default function SearchItems() {
                       </div>
                     )}
                   </div>
+                  {item.is_lost && item.status === "lost" && (
+                    <Button 
+                      onClick={() => handleFoundItem(item)}
+                      className="w-full"
+                      size="sm"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Encontrei esse item
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))
