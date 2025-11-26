@@ -92,11 +92,11 @@ export default function SearchItems() {
       filtered = filtered.filter((item) => item.category === categoryFilter);
     }
 
-    // Filter by item type - considerar também o status
+    // Filter by item type
     if (itemType === "lost") {
-      filtered = filtered.filter((item) => item.is_lost && item.status === "lost");
+      filtered = filtered.filter((item) => item.status === "lost");
     } else if (itemType === "found") {
-      filtered = filtered.filter((item) => !item.is_lost && item.status === "found");
+      filtered = filtered.filter((item) => item.status === "found");
     }
 
     setFilteredItems(filtered);
@@ -300,7 +300,7 @@ export default function SearchItems() {
                       </div>
                     )}
                   </div>
-                  {item.is_lost && item.status === "lost" && (
+                  {item.status === "lost" && (
                     <Button 
                       onClick={() => handleFoundItem(item)}
                       className="w-full"
