@@ -101,23 +101,32 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-success/5 p-4">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar
-        </Button>
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-white mb-4 shadow-lg">
-            <Package className="w-8 h-8" />
-          </div>
-          <h1 className="text-3xl font-bold mb-2">Achados e Perdidos</h1>
-          <p className="text-muted-foreground">Gerencie itens perdidos e encontrados</p>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-success/5">
+      <div className="container mx-auto px-4 py-6">
+        <div className="max-w-5xl mx-auto">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="mb-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar
+          </Button>
         </div>
+      </div>
+      
+      <div className="flex items-center justify-center px-4 pb-20">
+        <div className="w-full max-w-md">
+          <button 
+            onClick={() => navigate('/')} 
+            className="flex flex-col items-center w-full mb-8 hover:opacity-80 transition-opacity"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white mb-4 shadow-lg">
+              <Package className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold mb-2">Achados e Perdidos</h1>
+            <p className="text-muted-foreground">Gerencie itens perdidos e encontrados</p>
+          </button>
 
         <Card className="shadow-xl">
           <CardHeader>
@@ -218,6 +227,7 @@ const Auth = () => {
             </Tabs>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
