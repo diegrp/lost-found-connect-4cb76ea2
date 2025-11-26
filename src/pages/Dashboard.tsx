@@ -154,7 +154,7 @@ const Dashboard = () => {
             <CardContent>
               <Button 
                 className="w-full" 
-                onClick={() => navigate('/register-lost-item')}
+                onClick={() => navigate('/register-lost')}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Registrar Item Perdido
@@ -172,7 +172,7 @@ const Dashboard = () => {
             <CardContent>
               <Button 
                 className="w-full"
-                onClick={() => navigate('/register-found-item')}
+                onClick={() => navigate('/register-found')}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Registrar Item Encontrado
