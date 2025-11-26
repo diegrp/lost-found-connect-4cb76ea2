@@ -350,7 +350,7 @@ export default function Matches() {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid md:grid-cols-[1fr,auto,1fr] gap-6 items-start">
                     {/* Item Perdido */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 mb-3">
@@ -391,7 +391,7 @@ export default function Matches() {
                     </div>
 
                     {/* Seta de conexão */}
-                    <div className="hidden md:flex items-center justify-center">
+                    <div className="hidden md:flex items-center justify-center pt-12">
                       <ArrowRight className="h-8 w-8 text-muted-foreground" />
                     </div>
 
