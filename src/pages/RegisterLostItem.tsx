@@ -43,21 +43,28 @@ const RegisterLostItem = () => {
     setLoading(true);
 
     try {
-      // Verificar se o usuário já tem um item encontrado com a mesma categoria
-      const { data: existingFoundItems, error: checkError } = await supabase
+      // Verificar se já existe um item com o mesmo título e imagem
+      let query = supabase
         .from("items")
         .select("*")
         .eq("user_id", user.id)
-        .eq("is_lost", false)
-        .eq("category", formData.category as TablesInsert<"items">["category"])
-        .in("status", ["found", "matched"]);
+        .eq("title", formData.title.trim())
+        .in("status", ["lost", "found", "matched"]);
+
+      // Se houver imagem, incluir na verificação
+      if (formData.image_url) {
+        query = query.eq("image_url", formData.image_url.trim());
+      }
+
+      const { data: existingItems, error: checkError } = await query;
 
       if (checkError) throw checkError;
 
-      if (existingFoundItems && existingFoundItems.length > 0) {
+      if (existingItems && existingItems.length > 0) {
         toast.error(
-          "Você já tem um item encontrado cadastrado nesta categoria. " +
-          "Por favor, atualize o status do item encontrado para 'Perdido' ou exclua-o antes de registrar um novo item perdido.",
+          "Você já tem um item cadastrado com o mesmo título" + 
+          (formData.image_url ? " e imagem" : "") + 
+          ". Por favor, atualize o item existente ou use um título diferente.",
           { duration: 6000 }
         );
         setLoading(false);
