@@ -4,11 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Search, CheckCircle, AlertCircle, LogOut, Plus, Link as LinkIcon } from 'lucide-react';
+import { Package, Search, CheckCircle, AlertCircle, Plus, Link as LinkIcon } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     lost: 0,
@@ -66,7 +66,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-success/5">
       <header className="border-b bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white shadow-md">
               <Package className="w-5 h-5" />
@@ -76,10 +76,6 @@ const Dashboard = () => {
               <p className="text-sm text-muted-foreground">Sistema de Gestão</p>
             </div>
           </div>
-          <Button onClick={signOut} variant="outline" size="sm">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
         </div>
       </header>
 
