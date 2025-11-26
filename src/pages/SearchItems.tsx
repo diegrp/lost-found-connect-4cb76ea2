@@ -24,6 +24,7 @@ interface Item {
   image_url?: string;
   contact_info?: string;
   user_id: string;
+  quantity: number;
 }
 
 export default function SearchItems() {
@@ -176,8 +177,39 @@ export default function SearchItems() {
         toast.error("Erro ao atualizar status: " + error.message);
       }
     } else {
-      // Navigate to register found item page
-      navigate("/register-found-item");
+      // Register as a found item for the current user
+      try {
+        const { error } = await supabase
+          .from("items")
+          .insert([{
+            title: item.title,
+            description: item.description,
+            category: item.category as any,
+            location: item.location,
+            date_lost_or_found: new Date().toISOString().split('T')[0],
+            image_url: item.image_url,
+            contact_info: user?.email || "",
+            is_lost: false,
+            status: "found" as any,
+            user_id: user!.id,
+            quantity: item.quantity,
+          }]);
+
+        if (error) throw error;
+
+        // Refresh items
+        fetchItems();
+
+        toast.success("Item registrado como encontrado!", {
+          style: {
+            background: "hsl(var(--primary))",
+            color: "hsl(var(--primary-foreground))",
+            border: "none",
+          },
+        });
+      } catch (error: any) {
+        toast.error("Erro ao registrar item: " + error.message);
+      }
     }
   };
 
