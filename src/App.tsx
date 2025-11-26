@@ -11,6 +11,7 @@ import RegisterLostItem from "./pages/RegisterLostItem";
 import RegisterFoundItem from "./pages/RegisterFoundItem";
 import SearchItems from "./pages/SearchItems";
 import MyItems from "./pages/MyItems";
+import Matches from "./pages/Matches";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/register-found-item" element={<RegisterFoundItem />} />
             <Route path="/search-items" element={<SearchItems />} />
             <Route path="/my-items" element={<MyItems />} />
+            <Route path="/matches" element={<Matches />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
