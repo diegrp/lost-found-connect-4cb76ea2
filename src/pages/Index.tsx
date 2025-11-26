@@ -21,7 +21,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-success/10">
       <header className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white shadow-lg">
               <Package className="w-6 h-6" />
