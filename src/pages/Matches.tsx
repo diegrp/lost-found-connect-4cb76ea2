@@ -394,7 +394,9 @@ export default function Matches() {
 
                     {/* Seta de conexão */}
                     <div className="hidden md:flex items-center justify-center pt-12">
-                      <ArrowRight className="h-8 w-8 text-muted-foreground" />
+                      <div className="bg-primary/10 rounded-full p-4">
+                        <ArrowRight className="h-6 w-6 text-primary" />
+                      </div>
                     </div>
 
                     {/* Item Encontrado */}
@@ -461,22 +463,42 @@ export default function Matches() {
                       </>
                     )}
                     {match.status === "accepted" && match.lost_item.user_id === user?.id && (
-                      <Button
-                        onClick={() =>
-                          markAsClaimed(match.id, match.lost_item_id, match.found_item_id)
-                        }
-                      >
-                        Confirmar que Recuperei o Item
-                      </Button>
+                      <>
+                        <Button
+                          onClick={() =>
+                            markAsClaimed(match.id, match.lost_item_id, match.found_item_id)
+                          }
+                        >
+                          Confirmar que Recuperei o Item
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => rejectMatch(match.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <X className="h-4 w-4" />
+                          Não é o mesmo item
+                        </Button>
+                      </>
                     )}
                     {match.status === "claimed" && match.found_item.user_id === user?.id && (
-                      <Button
-                        onClick={() =>
-                          markAsReturned(match.id, match.lost_item_id, match.found_item_id)
-                        }
-                      >
-                        Confirmar Devolução
-                      </Button>
+                      <>
+                        <Button
+                          onClick={() =>
+                            markAsReturned(match.id, match.lost_item_id, match.found_item_id)
+                          }
+                        >
+                          Confirmar Devolução
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => rejectMatch(match.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <X className="h-4 w-4" />
+                          Não é o mesmo item
+                        </Button>
+                      </>
                     )}
                     {match.status === "returned" && (
                       <Badge variant="default" className="px-4 py-2">
