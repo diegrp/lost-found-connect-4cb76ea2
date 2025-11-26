@@ -63,10 +63,8 @@ const RegisterFoundItem = () => {
 
       if (existingLostItems && existingLostItems.length > 0) {
         toast.error(
-          "Você não pode registrar um item encontrado já registrado em itens perdidos" +
-          (formData.image_url ? " (mesmo título e imagem)" : " (mesmo título)") + 
-          ". Atualize o status do item perdido para 'Encontrado'.",
-          { duration: 6000 }
+          "Item já cadastrado como perdido. Atualize o status do item existente ao invés de criar novo registro.",
+          { duration: 5000 }
         );
         setLoading(false);
         return;
@@ -91,10 +89,8 @@ const RegisterFoundItem = () => {
 
       if (existingFoundItems && existingFoundItems.length > 0) {
         toast.error(
-          "Você já tem um item encontrado cadastrado com o mesmo título" + 
-          (formData.image_url ? " e imagem" : "") + 
-          ". Por favor, atualize o item existente ou use um título diferente.",
-          { duration: 6000 }
+          "Você já possui este item cadastrado. Atualize o registro existente ou use título diferente.",
+          { duration: 5000 }
         );
         setLoading(false);
         return;
@@ -165,6 +161,19 @@ const RegisterFoundItem = () => {
               </div>
 
               <div>
+                <Label htmlFor="quantity">Quantidade *</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min="1"
+                  value={formData.quantity}
+                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                  placeholder="1"
+                  required
+                />
+              </div>
+
+              <div>
                 <Label htmlFor="category">Categoria *</Label>
                 <Select
                   value={formData.category}
@@ -228,19 +237,6 @@ const RegisterFoundItem = () => {
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                   placeholder="https://exemplo.com/imagem.jpg"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="quantity">Quantidade *</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  min="1"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  placeholder="1"
-                  required
                 />
               </div>
 
