@@ -265,14 +265,40 @@ export default function Matches() {
 
   const rejectMatch = async (matchId: string) => {
     try {
-      const { error } = await supabase
+      // Buscar o match para pegar os IDs dos itens
+      const { data: match, error: matchFetchError } = await supabase
+        .from("matches")
+        .select("lost_item_id, found_item_id")
+        .eq("id", matchId)
+        .single();
+
+      if (matchFetchError) throw matchFetchError;
+      if (!match) throw new Error("Correspondência não encontrada");
+
+      // Atualizar status do match para rejected
+      const { error: matchError } = await supabase
         .from("matches")
         .update({ status: "rejected" })
         .eq("id", matchId);
 
-      if (error) throw error;
+      if (matchError) throw matchError;
 
-      toast.success("Correspondência rejeitada.");
+      // Reverter status dos itens para lost/found
+      const { error: lostError } = await supabase
+        .from("items")
+        .update({ status: "lost" })
+        .eq("id", match.lost_item_id);
+
+      if (lostError) throw lostError;
+
+      const { error: foundError } = await supabase
+        .from("items")
+        .update({ status: "found" })
+        .eq("id", match.found_item_id);
+
+      if (foundError) throw foundError;
+
+      toast.success("Correspondência rejeitada e itens revertidos ao status anterior.");
       fetchMatches();
     } catch (error: any) {
       toast.error("Erro ao rejeitar correspondência: " + error.message);

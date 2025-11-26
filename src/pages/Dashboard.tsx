@@ -34,16 +34,30 @@ const Dashboard = () => {
     try {
       const { data: items, error } = await supabase
         .from('items')
-        .select('status, is_lost');
+        .select('id, status, is_lost, user_id')
+        .eq('user_id', user?.id || '');
 
       if (error) throw error;
 
-      const lost = items?.filter(item => item.is_lost).length || 0;
-      const found = items?.filter(item => !item.is_lost).length || 0;
-      const matched = items?.filter(item => item.status === 'matched').length || 0;
+      // Buscar correspondências ativas (não rejeitadas) do usuário
+      const userItemIds = items?.map(item => item.id) || [];
+      
+      let matchedCount = 0;
+      if (userItemIds.length > 0) {
+        const { data: matches } = await supabase
+          .from('matches')
+          .select('id, status')
+          .or(`lost_item_id.in.(${userItemIds.join(",")}),found_item_id.in.(${userItemIds.join(",")})`)
+          .in('status', ['pending', 'accepted', 'claimed']);
+
+        matchedCount = matches?.length || 0;
+      }
+
+      const lost = items?.filter(item => item.is_lost && item.status === 'lost').length || 0;
+      const found = items?.filter(item => !item.is_lost && item.status === 'found').length || 0;
       const returned = items?.filter(item => item.status === 'returned').length || 0;
 
-      setStats({ lost, found, matched, returned });
+      setStats({ lost, found, matched: matchedCount, returned });
     } catch (error) {
       console.error('Error loading stats:', error);
     } finally {
