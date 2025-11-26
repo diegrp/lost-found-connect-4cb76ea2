@@ -188,11 +188,16 @@ const EditItem = () => {
                     <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat}>
-                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="electronics">Eletrônicos</SelectItem>
+                    <SelectItem value="documents">Documentos</SelectItem>
+                    <SelectItem value="clothing">Roupas</SelectItem>
+                    <SelectItem value="accessories">Acessórios</SelectItem>
+                    <SelectItem value="bags">Bolsas/Mochilas</SelectItem>
+                    <SelectItem value="keys">Chaves</SelectItem>
+                    <SelectItem value="jewelry">Joias</SelectItem>
+                    <SelectItem value="sports">Artigos Esportivos</SelectItem>
+                    <SelectItem value="books">Livros</SelectItem>
+                    <SelectItem value="other">Outros</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
