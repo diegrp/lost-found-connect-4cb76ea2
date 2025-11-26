@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, ArrowRight, CheckCircle, X } from "lucide-react";
 import { toast } from "sonner";
+import { getCategoryLabel } from "@/lib/translations";
 
 interface Match {
   id: string;
@@ -402,7 +403,7 @@ export default function Matches() {
                         </p>
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center gap-2">
-                            <Badge variant="secondary">{match.lost_item.category}</Badge>
+                            <Badge variant="secondary">{getCategoryLabel(match.lost_item.category)}</Badge>
                           </div>
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <MapPin className="h-4 w-4" />
@@ -448,7 +449,7 @@ export default function Matches() {
                         </p>
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center gap-2">
-                            <Badge variant="secondary">{match.found_item.category}</Badge>
+                            <Badge variant="secondary">{getCategoryLabel(match.found_item.category)}</Badge>
                           </div>
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <MapPin className="h-4 w-4" />

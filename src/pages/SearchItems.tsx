@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Search, Calendar, MapPin, User } from "lucide-react";
 import { toast } from "sonner";
+import { getCategoryLabel } from "@/lib/translations";
 
 interface Item {
   id: string;
@@ -189,7 +190,7 @@ export default function SearchItems() {
                     <Badge className={getStatusColor(item.status)}>
                       {item.is_lost ? "Perdido" : "Encontrado"}
                     </Badge>
-                    <Badge variant="outline">{item.category}</Badge>
+                    <Badge variant="outline">{getCategoryLabel(item.category)}</Badge>
                   </div>
                   <CardTitle>{item.title}</CardTitle>
                   <CardDescription className="line-clamp-2">{item.description}</CardDescription>
