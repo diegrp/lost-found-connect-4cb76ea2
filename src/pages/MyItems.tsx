@@ -151,10 +151,10 @@ export default function MyItems() {
             <div className="col-span-full text-center py-12">
               <p className="text-muted-foreground mb-4">Você ainda não registrou nenhum item</p>
               <div className="flex gap-4 justify-center">
-                <Button onClick={() => navigate("/register-lost-item")}>
+                <Button onClick={() => navigate("/register-lost")}>
                   Registrar Item Perdido
                 </Button>
-                <Button onClick={() => navigate("/register-found-item")} variant="outline">
+                <Button onClick={() => navigate("/register-found")} variant="outline">
                   Registrar Item Encontrado
                 </Button>
               </div>
