@@ -99,10 +99,12 @@ export default function MyItems() {
         return "bg-amber-500";
       case "found":
         return "bg-green-500";
-      case "claimed":
+      case "matched":
         return "bg-blue-500";
+      case "claimed":
+        return "bg-gray-500";
       case "returned":
-        return "bg-purple-500";
+        return "bg-gray-500";
       default:
         return "bg-gray-500";
     }
@@ -114,10 +116,12 @@ export default function MyItems() {
         return "Perdido";
       case "found":
         return "Encontrado";
+      case "matched":
+        return "Match Encontrado";
       case "claimed":
-        return "Reivindicado";
+        return "Encontrado pelo dono";
       case "returned":
-        return "Devolvido";
+        return "Encontrado pelo dono";
       default:
         return status;
     }
