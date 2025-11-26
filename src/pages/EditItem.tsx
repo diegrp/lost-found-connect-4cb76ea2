@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const EditItem = () => {
   const navigate = useNavigate();
@@ -133,17 +133,8 @@ const EditItem = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/my-items")}
-          className="mb-6"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar aos Meus Itens
-        </Button>
-
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold mb-2">
             Editar {formData.is_lost ? "Item Perdido" : "Item Encontrado"}
