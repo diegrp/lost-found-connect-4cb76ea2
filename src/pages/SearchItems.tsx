@@ -85,11 +85,11 @@ export default function SearchItems() {
       filtered = filtered.filter((item) => item.category === categoryFilter);
     }
 
-    // Filter by item type
+    // Filter by item type - considerar também o status
     if (itemType === "lost") {
-      filtered = filtered.filter((item) => item.is_lost);
+      filtered = filtered.filter((item) => item.is_lost && item.status === "lost");
     } else if (itemType === "found") {
-      filtered = filtered.filter((item) => !item.is_lost);
+      filtered = filtered.filter((item) => !item.is_lost && item.status === "found");
     }
 
     setFilteredItems(filtered);
