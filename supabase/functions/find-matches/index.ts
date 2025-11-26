@@ -39,6 +39,11 @@ serve(async (req) => {
     // Para cada item perdido, calcular score com itens encontrados
     for (const lostItem of lostItems || []) {
       for (const foundItem of foundItems || []) {
+        // Não permitir match entre itens do mesmo usuário
+        if (lostItem.user_id === foundItem.user_id) {
+          continue;
+        }
+
         let score = 0;
 
         // Mesma categoria: +40 pontos
