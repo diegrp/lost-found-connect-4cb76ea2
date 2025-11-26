@@ -191,7 +191,7 @@ const Dashboard = () => {
               <Button 
                 className="w-full" 
                 variant="outline"
-                onClick={() => navigate('/items')}
+                onClick={() => navigate('/search-items')}
               >
                 <Search className="w-4 h-4 mr-2" />
                 Ver Todos os Itens
