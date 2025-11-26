@@ -34,6 +34,7 @@ export default function SearchItems() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [itemType, setItemType] = useState<"all" | "lost" | "found">("all");
+  const [showOnlyMyItems, setShowOnlyMyItems] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function SearchItems() {
 
   useEffect(() => {
     filterItems();
-  }, [items, searchQuery, categoryFilter, itemType]);
+  }, [items, searchQuery, categoryFilter, itemType, showOnlyMyItems]);
 
   const fetchItems = async () => {
     try {
@@ -69,6 +70,11 @@ export default function SearchItems() {
 
   const filterItems = () => {
     let filtered = [...items];
+
+    // Filter by user
+    if (showOnlyMyItems) {
+      filtered = filtered.filter((item) => item.user_id === user?.id);
+    }
 
     // Filter by search query
     if (searchQuery) {
@@ -149,7 +155,7 @@ export default function SearchItems() {
         </div>
 
         <div className="mb-6 space-y-4">
-          <div className="flex gap-4 flex-wrap">
+          <div className="flex gap-4 flex-wrap items-center">
             <div className="flex-1 min-w-[200px]">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -176,6 +182,12 @@ export default function SearchItems() {
                 <SelectItem value="other">Outros</SelectItem>
               </SelectContent>
             </Select>
+            <Button
+              variant={showOnlyMyItems ? "default" : "outline"}
+              onClick={() => setShowOnlyMyItems(!showOnlyMyItems)}
+            >
+              {showOnlyMyItems ? "Meus Itens" : "Todos os Itens"}
+            </Button>
           </div>
 
           <Tabs value={itemType} onValueChange={(v) => setItemType(v as any)} className="w-full">
