@@ -12,6 +12,7 @@ import RegisterFoundItem from "./pages/RegisterFoundItem";
 import SearchItems from "./pages/SearchItems";
 import MyItems from "./pages/MyItems";
 import Matches from "./pages/Matches";
+import EditItem from "./pages/EditItem";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/search-items" element={<SearchItems />} />
             <Route path="/my-items" element={<MyItems />} />
             <Route path="/matches" element={<Matches />} />
+            <Route path="/edit-item/:id" element={<EditItem />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
