@@ -22,12 +22,15 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-success/10">
       <header className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
-          <div className="flex items-center gap-3">
+          <button 
+            onClick={() => navigate('/')} 
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white shadow-lg">
               <Package className="w-6 h-6" />
             </div>
             <span className="text-2xl font-bold">Achados e Perdidos</span>
-          </div>
+          </button>
           <Button onClick={() => navigate('/auth')} variant="outline">
             Entrar
           </Button>
