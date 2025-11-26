@@ -122,6 +122,33 @@ export default function MyItems() {
     }
   };
 
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case "electronics":
+        return "Eletrônicos";
+      case "documents":
+        return "Documentos";
+      case "clothing":
+        return "Roupas";
+      case "accessories":
+        return "Acessórios";
+      case "bags":
+        return "Bolsas/Mochilas";
+      case "keys":
+        return "Chaves";
+      case "jewelry":
+        return "Joias";
+      case "sports":
+        return "Artigos Esportivos";
+      case "books":
+        return "Livros";
+      case "other":
+        return "Outros";
+      default:
+        return category;
+    }
+  };
+
   if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -171,7 +198,7 @@ export default function MyItems() {
                     <Badge className={getStatusColor(item.status)}>
                       {item.is_lost ? "Perdido" : "Encontrado"}
                     </Badge>
-                    <Badge variant="outline">{item.category}</Badge>
+                    <Badge variant="outline">{getCategoryLabel(item.category)}</Badge>
                   </div>
                   <CardTitle>{item.title}</CardTitle>
                   <CardDescription className="line-clamp-2">{item.description}</CardDescription>
