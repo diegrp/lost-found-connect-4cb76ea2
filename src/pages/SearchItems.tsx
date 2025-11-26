@@ -101,12 +101,31 @@ export default function SearchItems() {
         return "bg-amber-500";
       case "found":
         return "bg-green-500";
-      case "claimed":
+      case "matched":
         return "bg-blue-500";
+      case "claimed":
+        return "bg-gray-500";
       case "returned":
-        return "bg-purple-500";
+        return "bg-gray-500";
       default:
         return "bg-gray-500";
+    }
+  };
+
+  const getStatusLabel = (status: string, isLost: boolean) => {
+    switch (status) {
+      case "lost":
+        return "Perdido";
+      case "found":
+        return "Encontrado";
+      case "matched":
+        return "Match Encontrado";
+      case "claimed":
+        return "Encontrado pelo dono";
+      case "returned":
+        return "Encontrado pelo dono";
+      default:
+        return status;
     }
   };
 
@@ -188,7 +207,7 @@ export default function SearchItems() {
                 <CardHeader>
                   <div className="flex justify-between items-start mb-2">
                     <Badge className={getStatusColor(item.status)}>
-                      {item.is_lost ? "Perdido" : "Encontrado"}
+                      {getStatusLabel(item.status, item.is_lost)}
                     </Badge>
                     <Badge variant="outline">{getCategoryLabel(item.category)}</Badge>
                   </div>
